@@ -5,9 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-public class Pergunta {
+public class TipoResposta {
 
 	@EqualsAndHashCode.Include
 	@Id
@@ -24,13 +21,5 @@ public class Pergunta {
 
 	@Column(nullable = false)
 	private String descricao;
-
-	@ManyToOne
-	@JoinColumn(nullable = false)
-	private Pesquisa pesquisa;
-	
-	@OneToOne
-	@JoinColumn(name = "TIPO_RESPOSTA_ID", referencedColumnName = "ID")
-	private TipoResposta tipoPesquisa;
 
 }

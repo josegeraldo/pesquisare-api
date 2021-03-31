@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# ignore eclipse files
+.project
+.classpath
+.settings
+.metadata
+bin

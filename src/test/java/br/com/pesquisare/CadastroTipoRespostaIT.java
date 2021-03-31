@@ -14,8 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import br.com.pesquisare.domain.model.Pesquisa;
-import br.com.pesquisare.domain.repository.PesquisaRepository;
+import br.com.pesquisare.domain.model.TipoResposta;
+import br.com.pesquisare.domain.repository.TipoRespostaRepository;
 import br.com.pesquisare.util.DatabaseCleaner;
 import br.com.pesquisare.util.ResourceUtils;
 import io.restassured.RestAssured;
@@ -24,9 +24,9 @@ import io.restassured.http.ContentType;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("/application-test.properties")
-class CadastroPesquisaIT {
+class CadastroTipoRespostaIT {
 
-	private static final int PESQUISA_ID_INEXISTENTE = 100;
+	private static final int TIPO_RESPOSTA_ID_INEXISTENTE = 100;
 
 	@LocalServerPort
 	private int port;
@@ -35,27 +35,27 @@ class CadastroPesquisaIT {
 	private DatabaseCleaner databaseCleaner;
 	
 	@Autowired
-	private PesquisaRepository pesquisaRepository;
+	private TipoRespostaRepository tipoRespostaRepository;
 	
-	private Pesquisa pesquisaUm;
-	private int quantidadePesquisasCadastradas;
-	private String jsonCorretoPesquisaNova;
+	private TipoResposta tipoRespostaHum;
+	private int quantidadeTiposRespostasCadastradas;
+	private String jsonCorretoTipoRespostaNova;
 	
 	@BeforeEach
 	public void setUp() {
 		RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 		RestAssured.port = port;
-		RestAssured.basePath = "/pesquisas";
+		RestAssured.basePath = "/tipos-respostas";
 
-		jsonCorretoPesquisaNova = ResourceUtils.getContentFromResource(
-				"/json/correto/pesquisa-nova.json");
+		jsonCorretoTipoRespostaNova = ResourceUtils.getContentFromResource(
+				"/json/correto/tipo-resposta-nova.json");
 		
 		databaseCleaner.clearTables();
 		prepararDados();
 	}
 	
 	@Test
-	public void deveRetornarStatus200_QuandoConsultarPesquisas() {
+	public void deveRetornarStatus200_QuandoConsultarTiposRespostas() {
 		given()
 			.accept(ContentType.JSON)
 		.when()
@@ -65,19 +65,19 @@ class CadastroPesquisaIT {
 	}
 
 	@Test
-	public void deveRetornarQuantidadeCorretaDePesquisas_QuandoConsultarPesquisas() {
+	public void deveRetornarQuantidadeCorretaDePesquisas_QuandoConsultarTiposRespostas() {
 		given()
 			.accept(ContentType.JSON)
 		.when()
 			.get()
 		.then()
-			.body("", hasSize(quantidadePesquisasCadastradas));
+			.body("", hasSize(quantidadeTiposRespostasCadastradas));
 	}
 	
 	@Test
-	public void deveRetornarStatus201_QuandoCadastrarPesquisa() {
+	public void deveRetornarStatus201_QuandoCadastrarTipoResposta() {
 		given()
-			.body(jsonCorretoPesquisaNova)
+			.body(jsonCorretoTipoRespostaNova)
 			.contentType(ContentType.JSON)
 			.accept(ContentType.JSON)
 		.when()
@@ -87,43 +87,39 @@ class CadastroPesquisaIT {
 	}
 
 	@Test
-	public void deveRetornarRespostaEStatusCorretos_QuandoConsultarPesquisaExistente() {
+	public void deveRetornarRespostaEStatusCorretos_QuandoConsultarTipoRespostaExistente() {
 		given()
-			.pathParam("pesquisaId", pesquisaUm.getId())
+			.pathParam("tipoRespostaId", tipoRespostaHum.getId())
 			.accept(ContentType.JSON)
 		.when()
-			.get("/{pesquisaId}")
+			.get("/{tipoRespostaId}")
 		.then()
 			.statusCode(HttpStatus.OK.value())
-			.body("descricao", equalTo(pesquisaUm.getDescricao()));
+			.body("descricao", equalTo(tipoRespostaHum.getDescricao()));
 	}
 	
 	@Test
-	public void deveRetornarStatus404_QuandoConsultarPesquisaInexistente() {
+	public void deveRetornarStatus404_QuandoConsultarTipoRespostaInexistente() {
 		given()
-			.pathParam("pesquisaId", PESQUISA_ID_INEXISTENTE)
+			.pathParam("tipoRespostaId", TIPO_RESPOSTA_ID_INEXISTENTE)
 			.accept(ContentType.JSON)
 		.when()
-			.get("/{pesquisaId}")
+			.get("/{tipoRespostaId}")
 		.then()
 			.statusCode(HttpStatus.NOT_FOUND.value());
 	}
 	
 	private void prepararDados() {
 		
-		pesquisaUm = new Pesquisa();
-		pesquisaUm.setAtivo(true);
-		pesquisaUm.setDescricao("PesquisaUm");
-		pesquisaUm.setTitulo("Titulo Um");
-		pesquisaRepository.save(pesquisaUm);
+		tipoRespostaHum = new TipoResposta();
+		tipoRespostaHum.setDescricao("Somente uma alternativa correta");
+		tipoRespostaRepository.save(tipoRespostaHum);
 		
-		Pesquisa pesquisaNova = new Pesquisa();
-		pesquisaNova.setAtivo(true);
-		pesquisaNova.setDescricao("PesquisaNova");
-		pesquisaNova.setTitulo("Titulo Novo");
-		pesquisaRepository.save(pesquisaNova);
+		TipoResposta tipoPesquisaNova = new TipoResposta();
+		tipoPesquisaNova.setDescricao("Sim ou Não");
+		tipoRespostaRepository.save(tipoPesquisaNova);
 		
-		quantidadePesquisasCadastradas = (int) pesquisaRepository.count();
+		quantidadeTiposRespostasCadastradas = (int) tipoRespostaRepository.count();
 	}
 
 }

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost/pesquisare?createDatabaseIfNotExist=true&serverTimeZone=UTC
+    url: jdbc:mysql://localhost/pesquisare?createDatabaseIfNotExist=true&useTimezone=true&serverTimezone=UTC
     username: pesquisare
     password: P35quis@r3
   jpa:
